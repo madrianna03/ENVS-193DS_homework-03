@@ -58,3 +58,17 @@ ggplot(summary_data, aes(x = group, y = mean_productivity, fill = variable)) +
 c. Caption
 
 Figure 1. Mean productivity scores (1–10) by social context, sleep level, caffeine intake, and study location. Each panel displays how productivity varies with respect to one grouping factor, helping visualize which environments or habits are linked with higher productivity.
+
+d. Table Presentation
+```{r}
+library(gt)
+#create productivity summary table using gt
+summary_data %>%
+  pivot_wider(names_from = variable, values_from = mean_productivity) %>% 
+  gt() %>%
+  tab_header(
+    title = "Average Productivity Across Grouping Variables"
+  ) %>%
+  fmt_number(columns = everything(), decimals = 1)
+```
+
