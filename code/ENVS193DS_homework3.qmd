@@ -133,3 +133,20 @@ My piece explores how daily factors like caffeine intake, sleep hours, study loc
 
 I was influenced by data storytelling techniques found in the work of Giorgia Lupi and the aesthetics of minimal data visualizations. Their ability to blend personal experience with visual clarity inspired me to turn routine self-tracking into a reflective and communicative work. The form of my work is a digital data visualization created using R and the ggplot2 package. It draws from principles of both statistical graphics and conceptual art to communicate. I created this piece by collecting daily data on my habits and productivity over several weeks, cleaning and reshaping the dataset, and then designing the plot to clearly represent each variable’s relationship with my performance. The use of color, faceting, and minimal design allows viewers to engage with the rhythms of my everyday life through an analytically aesthetic lens.
 
+Part 3: Statistical Critique
+a. Revisiting and Summarizing
+
+The paper uses multiple linear regression (MLR) analysis. The response variable is the
+dolphin density per survey effort (DPSE). The predictor variables include environmental
+factors (temperature, salinity, water clarity, etc.), anthropogenic factors (high-speed
+ferry traffic, reclamation activities), and ecological factors (fish production). 
+![Table 7: MLR and PCR results](../images/stat_critique.jpg)
+b. Table 7 presents the MLR and PCR coefficients in a clear matrix format, broken down by region. Each cell contains a coefficient estimate with its standard error in parentheses, and asterisks mark statistically significant results. However, the table does not show any of the underlying data distributions or model diagnostics. While the tabular format is suitable for dense numeric summaries, it may be harder for readers to quickly compare effect sizes across variables without visual aids.
+
+c. The table is mostly free of visual clutter and keeps a high data:ink ratio. It uses asterisks to draw attention to significant predictors, but it does not use bolding, color coding, or other emphasis techniques that might help highlight key findings more clearly. Overall, the presentation is functional but could benefit from design enhancements to help guide the reader’s attention to the most important results.
+
+d. To improve Table 7, I would recommend breaking it into two visuals. A heatmap would show the strength and direction of the regression coefficients for each variable across subregions. The x-axis would represent the subregions, the y-axis would represent the predictor variables (salinity, ferry traffic, etc.), and fill color would represent the coefficient value (red to blue, intensity indicating magnitude). Asterisks or bold outlines could denote statistical significance based on a p-test. 
+
+Bar charts or dot plots with error bars for each subregion, showing the effect sizes of the most influential predictors would make it easier to interpret which variables had the strongest and most reliable impacts in each area.
+
+
