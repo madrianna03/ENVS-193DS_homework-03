@@ -4,6 +4,8 @@ author: Adrianna Martinez
 format: html
 github respository link: https://github.com/madrianna03/ENVS-193DS_homework-03.git
 ---
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+---
 ```{r}
 #read in all packages
 library(tidyverse)
