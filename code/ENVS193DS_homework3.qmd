@@ -26,12 +26,13 @@ b.
 # Categorize caffeine and sleep with binning
 data <- data %>%
   mutate(
-    caffeine_level = case_when(
+    caffeine_level = case_when( #create a new variable "caffeine_level" based on caffeine intake in mg
       caffeine_mg == 0 ~ "None",
       caffeine_mg > 0 & caffeine_mg <= 100 ~ "Low",
       caffeine_mg > 100 & caffeine_mg <= 200 ~ "Moderate",
       caffeine_mg > 200 ~ "High"
     ),
+    #create a new variable 'sleep_level' based on the number of hours of sleep
     sleep_level = case_when(
       sleep_hrs < 6 ~ "Low",
       sleep_hrs >= 6 & sleep_hrs < 8 ~ "Medium",
@@ -41,19 +42,23 @@ data <- data %>%
 
 # Pivot for grouped plots
 summary_data <- data %>%
+  #select relevant columns for analysis
   select(productivity, with_others, sleep_level, caffeine_level, location) %>%
+  #convert wide format to long format for grouped plotting
   pivot_longer(cols = c(with_others, sleep_level, caffeine_level, location),
                names_to = "variable", values_to = "group") %>%
+  #group by each variable and group level
   group_by(variable, group) %>%
+  #calc the mean productivity for each group, ignoring missing values
   summarise(mean_productivity = mean(productivity, na.rm = TRUE), .groups = "drop")
 
 # Bar Plot of mean productivity by with others, sleep, caffeine, and location
-ggplot(summary_data, aes(x = group, y = mean_productivity, fill = variable)) +
+ggplot(summary_data, aes(x = group, y = mean_productivity, fill = variable)) +  #create bar plot without legend
   geom_col(show.legend = FALSE) +
-  facet_wrap(~ variable, scales = "free_x") +
-  labs(x = "Group", y = "Mean Productivity (1–10)", title = "Average Productivity by Group") +
-  scale_fill_brewer(palette = "Set2") +
-  theme_minimal()
+  facet_wrap(~ variable, scales = "free_x") + # Create separate panels for each variable
+  labs(x = "Group", y = "Mean Productivity (1–10)", title = "Average Productivity by Group") + #add title and axis labels
+  scale_fill_brewer(palette = "Set2") + #add color palette
+  theme_minimal() #use minimal theme
 ```
 c. Caption
 
@@ -64,11 +69,14 @@ d. Table Presentation
 library(gt)
 #create productivity summary table using gt
 summary_data %>%
-  pivot_wider(names_from = variable, values_from = mean_productivity) %>% 
+   # Reshape data to wide format: one row per group, columns for each variable
+  pivot_wider(names_from = variable, values_from = mean_productivity) %>%
+  #generate nicely formatted table
   gt() %>%
   tab_header(
     title = "Average Productivity Across Grouping Variables"
   ) %>%
+  #format all numeric columns to one decimal place
   fmt_number(columns = everything(), decimals = 1)
 ```
 Problem 2: Affective Visualization
@@ -85,7 +93,8 @@ df <- read.csv("~/git/ENVS-193DS_homework-03/data/ENVS193DS_personaldata_cleaned
 # Convert date to Date type
 df <- df %>% mutate(date = as.Date(date))
 
-# Convert relevant columns to character
+# Convert variables to character to prevent them from being treated as numeric factors or continuous variables during plotting and reshaping.
+# This step is important before using `pivot_longer()` to ensure consistent data structure.
 df <- df %>%
   mutate(
     with_others = as.character(with_others),
@@ -95,6 +104,7 @@ df <- df %>%
   )
 
 # Reshape to long format
+# transformation allows all variables to be plotted together in faceted plots
 df_long <- df %>%
   pivot_longer(
     cols = c(with_others, caffeine_mg, sleep_hrs, location),
@@ -102,7 +112,7 @@ df_long <- df %>%
     values_to = "value"
   )
 
-# Optional: bin caffeine and sleep for clearer grouping
+# Bin caffeine and sleep for clearer grouping
 df_long <- df_long %>%
   mutate(
     value = case_when(
@@ -114,17 +124,17 @@ df_long <- df_long %>%
 
 # Plot
 ggplot(df_long, aes(x = date, y = productivity, group = value, color = value)) +
-  geom_line(linewidth = 1.1) +
-  geom_point(size = 2) +
-  facet_wrap(~ variable, scales = "free_x") +
+  geom_line(linewidth = 1.1) + #line plot to show trend
+  geom_point(size = 2) + #points to emphasize actual data entries
+  facet_wrap(~ variable, scales = "free_x") + #one plot for each variable
   labs(
     title = "How My Productivity Varies by Social Context, Caffeine, Sleep, and Study Location",
     x = "Date",
     y = "Productivity Score",
     color = "Group"
   ) +
-  theme_minimal(base_size = 14) +
-  theme(strip.text = element_text(face = "bold"))
+  theme_minimal(base_size = 14) + #clean and readable theme
+  theme(strip.text = element_text(face = "bold")) #bold facet titles
 #need to come back to re order
 ```
 d. Artist Statement
