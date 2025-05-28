@@ -22,6 +22,36 @@ a. Data summarizing
 I will summarize my data by calculating the mean productivity score across categories of my grouping variables: hours of sleep the night before a study session, studying with others or not, caffeine, and location of study session. Comparing these groups will inform how each factor affects productivity levels; I expect increased caffeine and studying with others to improve my energy and attention while study locations such as my bedroom or outside to be less productive as there are more distractions. 
 b. 
 ```{r}
-#visualization: productivity 
+#visualization: productivity across all variables
+# Example binning
+data <- data %>%
+  mutate(
+    sleep_category = case_when(
+      sleep < 5 ~ "Low",
+      sleep >= 5 & sleep < 7 ~ "Medium",
+      sleep >= 7 ~ "High"
+    )
+  )
+
+# Pivot longer for easy faceted plotting
+summary_data <- data %>%
+  pivot_longer(cols = c(social_context, caffeine, sleep_category, location),
+               names_to = "grouping_var", values_to = "group") %>%
+  group_by(grouping_var, group) %>%
+  summarise(mean_productivity = mean(productivity, na.rm = TRUE),
+            .groups = "drop")
+
+# Visualization
+ggplot(summary_data, aes(x = group, y = mean_productivity, fill = grouping_var)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~grouping_var, scales = "free_x") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title = "Mean Productivity by Grouping Variables",
+    x = "Group",
+    y = "Mean Productivity Score"
+  )
+
 ```
 
