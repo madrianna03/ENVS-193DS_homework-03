@@ -13,7 +13,7 @@ library(janitor)
 library(readxl)
 
 #read in personal data
-data <- read_excel(here("data", "ENVS193DS_personaldata.csv.xlsx"))
+data <- read_csv(here("data", "ENVS193DS_personaldata_cleaned.csv"))
 
 ```
 
@@ -23,35 +23,38 @@ I will summarize my data by calculating the mean productivity score across categ
 b. 
 ```{r}
 #visualization: productivity across all variables
-# Example binning
+# Categorize caffeine and sleep with binning
 data <- data %>%
   mutate(
-    sleep_category = case_when(
-      sleep < 5 ~ "Low",
-      sleep >= 5 & sleep < 7 ~ "Medium",
-      sleep >= 7 ~ "High"
+    caffeine_level = case_when(
+      caffeine_mg == 0 ~ "None",
+      caffeine_mg > 0 & caffeine_mg <= 100 ~ "Low",
+      caffeine_mg > 100 & caffeine_mg <= 200 ~ "Moderate",
+      caffeine_mg > 200 ~ "High"
+    ),
+    sleep_level = case_when(
+      sleep_hrs < 6 ~ "Low",
+      sleep_hrs >= 6 & sleep_hrs < 8 ~ "Medium",
+      sleep_hrs >= 8 ~ "High"
     )
   )
 
-# Pivot longer for easy faceted plotting
+# Pivot for grouped plots
 summary_data <- data %>%
-  pivot_longer(cols = c(social_context, caffeine, sleep_category, location),
-               names_to = "grouping_var", values_to = "group") %>%
-  group_by(grouping_var, group) %>%
-  summarise(mean_productivity = mean(productivity, na.rm = TRUE),
-            .groups = "drop")
+  select(productivity, with_others, sleep_level, caffeine_level, location) %>%
+  pivot_longer(cols = c(with_others, sleep_level, caffeine_level, location),
+               names_to = "variable", values_to = "group") %>%
+  group_by(variable, group) %>%
+  summarise(mean_productivity = mean(productivity, na.rm = TRUE), .groups = "drop")
 
-# Visualization
-ggplot(summary_data, aes(x = group, y = mean_productivity, fill = grouping_var)) +
+# Bar Plot of mean productivity by with others, sleep, caffeine, and location
+ggplot(summary_data, aes(x = group, y = mean_productivity, fill = variable)) +
   geom_col(show.legend = FALSE) +
-  facet_wrap(~grouping_var, scales = "free_x") +
-  theme_minimal() +
+  facet_wrap(~ variable, scales = "free_x") +
+  labs(x = "Group", y = "Mean Productivity (1–10)", title = "Average Productivity by Group") +
   scale_fill_brewer(palette = "Set2") +
-  labs(
-    title = "Mean Productivity by Grouping Variables",
-    x = "Group",
-    y = "Mean Productivity Score"
-  )
-
+  theme_minimal()
 ```
+c. Caption
 
+Figure 1. Mean productivity scores (1–10) by social context, sleep level, caffeine intake, and study location. Each panel displays how productivity varies with respect to one grouping factor, helping visualize which environments or habits are linked with higher productivity.
