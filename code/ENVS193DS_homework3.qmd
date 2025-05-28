@@ -1,5 +1,27 @@
 ---
 title: "ENVS193DS_homework3"
+author: Adrianna Martinez
 format: html
+github respository link: https://github.com/madrianna03/ENVS-193DS_homework-03.git
 ---
+```{r}
+#read in all packages
+library(tidyverse)
+library(here)
+library(gt)
+library(janitor)
+library(readxl)
+
+#read in personal data
+data <- read_excel(here("data", "ENVS193DS_personaldata.csv.xlsx"))
+
+```
+
+Problem 1: Personal Data
+a. Data summarizing
+I will summarize my data by calculating the mean productivity score across categories of my grouping variables: hours of sleep the night before a study session, studying with others or not, caffeine, and location of study session. Comparing these groups will inform how each factor affects productivity levels; I expect increased caffeine and studying with others to improve my energy and attention while study locations such as my bedroom or outside to be less productive as there are more distractions. 
+b. 
+```{r}
+#visualization: productivity 
+```
 
