@@ -77,6 +77,59 @@ a. I would use a set of small line charts, each showing productivity over time, 
 
 b.Sketch of Affective Visualization
 
-![Sketch of productivity visualization faceted by location, annotated with caffeine and social context.](images/IMG_2449.jpg)
+![Sketch of productivity visualization faceted by location, annotated with caffeine and social context.](../images/IMG_2449.jpg)
+c. Draft of Visualization
 
+```{r}
+df <- read.csv("~/git/ENVS-193DS_homework-03/data/ENVS193DS_personaldata_cleaned.csv") 
+# Convert date to Date type
+df <- df %>% mutate(date = as.Date(date))
+
+# Convert relevant columns to character
+df <- df %>%
+  mutate(
+    with_others = as.character(with_others),
+    caffeine_mg = as.character(caffeine_mg),
+    sleep_hrs = as.character(sleep_hrs),
+    location = as.character(location)
+  )
+
+# Reshape to long format
+df_long <- df %>%
+  pivot_longer(
+    cols = c(with_others, caffeine_mg, sleep_hrs, location),
+    names_to = "variable",
+    values_to = "value"
+  )
+
+# Optional: bin caffeine and sleep for clearer grouping
+df_long <- df_long %>%
+  mutate(
+    value = case_when(
+      variable == "caffeine_mg" ~ cut(as.numeric(value), breaks = 3, labels = c("Low", "Med", "High")),
+      variable == "sleep_hrs" ~ cut(as.numeric(value), breaks = 3, labels = c("Low", "Med", "High")),
+      TRUE ~ as.character(value)
+    )
+  )
+
+# Plot
+ggplot(df_long, aes(x = date, y = productivity, group = value, color = value)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2) +
+  facet_wrap(~ variable, scales = "free_x") +
+  labs(
+    title = "How My Productivity Varies by Social Context, Caffeine, Sleep, and Study Location",
+    x = "Date",
+    y = "Productivity Score",
+    color = "Group"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(strip.text = element_text(face = "bold"))
+#need to come back to re order
+```
+d. Artist Statement
+
+My piece explores how daily factors like caffeine intake, sleep hours, study location, and social setting influence my productivity. Through a series of faceted line charts, I visualize patterns in how these variables correlate with changes in my focus and energy over time.
+
+I was influenced by data storytelling techniques found in the work of Giorgia Lupi and the aesthetics of minimal data visualizations. Their ability to blend personal experience with visual clarity inspired me to turn routine self-tracking into a reflective and communicative work. The form of my work is a digital data visualization created using R and the ggplot2 package. It draws from principles of both statistical graphics and conceptual art to communicate. I created this piece by collecting daily data on my habits and productivity over several weeks, cleaning and reshaping the dataset, and then designing the plot to clearly represent each variable’s relationship with my performance. The use of color, faceting, and minimal design allows viewers to engage with the rhythms of my everyday life through an analytically aesthetic lens.
 
